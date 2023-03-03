@@ -1,6 +1,9 @@
 public class Simulation {
 
     public static void runSequentialExample() {
+        System.out.println("== Starting sequential trucks example ==");
+        
+        System.out.println("== Sequential example is done now.");
 
     }
 
@@ -16,7 +19,7 @@ public class Simulation {
             System.out.println("Not Handling interruptions yet ... just going on with the program without as much sleep as needed ... how appropriate!");
         }
 	}
-    
+
     public static void main(String[] args) {
         System.out.println("hello world");
     }

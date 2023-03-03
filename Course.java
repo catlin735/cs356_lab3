@@ -17,6 +17,10 @@ public class Course {
     public int curr_enroll() {
         return students.size();
     }
+
+    public int max_enroll() {
+        return max_enroll;
+    }
     public boolean addCourse(int student_id) {
         if(isFull()) {
             return false;
@@ -24,7 +28,7 @@ public class Course {
         if(students.containsKey(student_id)) {
             return false;
         }
-        
+        //put delay here
         students.put(student_id,students.size());
         return true;
     }
