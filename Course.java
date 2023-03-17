@@ -21,7 +21,7 @@ public class Course {
     public int max_enroll() {
         return max_enroll;
     }
-    public boolean addCourse(int student_id) {
+    public synchronized boolean addCourse(int student_id) {
         if(isFull()) {
             return false;
         }
@@ -34,7 +34,7 @@ public class Course {
         return true;
     }
 
-    public boolean removeCourse(int student_id) throws Exception {
+    public synchronized boolean removeCourse(int student_id) throws Exception {
         if(!students.containsKey(student_id)) {
             throw new Exception("student not in course");
         }
