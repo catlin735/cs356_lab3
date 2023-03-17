@@ -11,6 +11,10 @@ public class Registrar {
         courses.add(new Course(max_enroll, course_id));
     }
 
+    public int getNumCourses() {
+        return courses.size();
+    }
+
 
 
     int getRandomCourse() {
@@ -20,6 +24,7 @@ public class Registrar {
     public int addCourse(int student_id, int course_id) {
         int courseToAdd=0;
         boolean addedToCourse=courses.get(course_id).addCourse(student_id);
+       
         if(addedToCourse) {
             if(courses.get(course_id).curr_enroll()>courses.get(course_id).max_enroll()) {
                 System.out.println("ERROR: enrollment exceeded");

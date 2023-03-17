@@ -29,6 +29,7 @@ public class Course {
             return false;
         }
         //put delay here
+        Simulation.tryToSleep(2.0, 2.0);
         students.put(student_id,students.size());
         return true;
     }

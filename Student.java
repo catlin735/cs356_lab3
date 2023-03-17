@@ -3,29 +3,28 @@ import java.util.PriorityQueue;
 
 
 public class Student extends Thread {
+    private static final double MIN_STARTING_INTERVAL = 0.1; // in seconds; should be at least 0.1
+    private static final double STARTING_INTERVAL_VAR= 2.0; 
     private int student_id;
     HashMap<Integer, Integer> desired;
-    HashMap<Integer, Integer> okay;
     private final Registrar registrar;
     private int COURSE_NUM;
-    private int ALSO_OKAY;
-    private final int MAX_TRIES=5;
-    private final long TIME_TO_WAIT=200;
+    private final int MAX_TRIES=2;
     PriorityQueue<StudentCourse> student_courses;
     int tries=0;
     int success=0;
 
-    Student(int student_id,Registrar registrar, HashMap<Integer,Integer> desired,HashMap<Integer,Integer> okay) {
+    Student(int student_id,Registrar registrar, HashMap<Integer,Integer> desired) {
         this.student_id=student_id;
         this.registrar=registrar;
         this.desired=desired;
         COURSE_NUM=desired.size();
-        ALSO_OKAY=okay.size();
         student_courses=new PriorityQueue<StudentCourse>();
-        for(int i=0;i<4;i++) {
+        for(int i=1;i<COURSE_NUM+1;i++) {
             StudentCourse dummy=new StudentCourse(-i, -1);
             student_courses.add(dummy);
         }
+       
     }
 
     public int getID() {
@@ -43,16 +42,8 @@ public class Student extends Thread {
         removeCourse();
 
         //choose course to add
-        int desiredCourse;
-        if(student_courses.peek().desire_rank()==-1) {
-            desiredCourse=okay.get(tries%ALSO_OKAY);
-            //desiredCourse=okay.get((int)(Math.random()*ALSO_OKAY));
-        }
-        else {
-            desiredCourse=desired.get(tries%COURSE_NUM);
-            //desiredCourse=desired.get((int)(Math.random()*COURSE_NUM));
-        }
-
+        int desiredCourse=desired.get(tries%COURSE_NUM);
+       
         //add whichever course the registrar allows
         int courseToAdd=registrar.addCourse(student_id,desiredCourse);
 
@@ -60,20 +51,29 @@ public class Student extends Thread {
             success++;
             student_courses.add(new StudentCourse(courseToAdd, 1));
         }
-        else if(okay.containsValue(courseToAdd)) {
-            student_courses.add(new StudentCourse(courseToAdd, 0));
-        }
         else {
             student_courses.add(new StudentCourse(courseToAdd, -1));
         }
-        assert numCourses()==COURSE_NUM;
+        if(numCourses()!=COURSE_NUM) {
+            System.out.println("oh no add courses problem");
+        }
        
     }
 
     void removeCourse() {
-        assert numCourses()==COURSE_NUM;
+        if(numCourses()!=COURSE_NUM) {
+            System.out.println("oh no remove courses problem");
+        }
         int courseToRemove=student_courses.peek().course_id();
+        if(courseToRemove<0 | courseToRemove > registrar.getNumCourses()-1) {
+            student_courses.poll();
+            return;
+        }
         boolean removedFromCourse=false;
+        System.out.println("Course to remove");
+        System.out.println(courseToRemove);
+        System.out.println("Student");
+        System.out.println(student_id);
         do {
             removedFromCourse=registrar.removeCourse(courseToRemove,student_id);
 
@@ -85,18 +85,7 @@ public class Student extends Thread {
  
     }
 
-    /* 
-    boolean hasCourse(int course_id) {
-        for(StudentCourse sc:student_courses) {
-            if(sc.course_id()==course_id) {
-                return true;
-            }
-
-        }
-        return false;
-    }
-    */
-
+ 
 
     void printSchedule() {
         for(StudentCourse sc:student_courses) {
@@ -108,13 +97,8 @@ public class Student extends Thread {
     public void run() {
         while(success<COURSE_NUM && tries<MAX_TRIES) {
             addCourse();
-            try {
-                java.lang.Thread.sleep(TIME_TO_WAIT);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
+            Simulation.tryToSleep(MIN_STARTING_INTERVAL, STARTING_INTERVAL_VAR);
+            tries++;
         }
         if(success==COURSE_NUM) {
             System.out.println(":)");
